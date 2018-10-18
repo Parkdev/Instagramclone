@@ -1,6 +1,8 @@
+# Media(Store User-uploaded files)
+/.media
+
 # Crawler temp data
 /crawler/saved_data
-
 
 # Created by https://www.gitignore.io/api/django
 
