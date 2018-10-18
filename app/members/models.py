@@ -5,6 +5,7 @@ class User(models.Model):
     username = models.CharField(
         '아이디',
         max_length=50,
+        unique=True,
     )
     img_profile = models.ImageField(
         '프로필 이미지',
