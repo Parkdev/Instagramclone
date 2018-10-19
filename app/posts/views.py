@@ -22,7 +22,7 @@ def post_list(request):
     # 4. posts/post_list.html을 Template으로 사용
     #     템플릿에서는 posts값을 순회하며
     #     각 Post의 photo정보를 출력
-    
+
     # 5. url은 posts.urls모듈을 사용
     #    config.urls에서 해당 모듈을 include
     #    posts.urls.app_name = 'posts'를 사용
