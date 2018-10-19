@@ -15,10 +15,15 @@ class Post(models.Model):
         '사진',
         upload_to='post',
     )
+    # auto_now_add: 객체가 처음 생성될때의 시간 저장
+    # auto_now: 객체의 save()가 호출될 때 마다 시간 저장
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = '포스트'
         verbose_name_plural = f'{verbose_name} 목록'
+        ordering = ['-pk']
 
 
 class Comment(models.Model):
