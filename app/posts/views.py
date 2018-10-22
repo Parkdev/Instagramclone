@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 
-from members.models import User
+
 from .forms import PostCreateForm
 from .models import Post
 
