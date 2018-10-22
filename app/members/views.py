@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 
 # Create your views here.
@@ -25,7 +25,8 @@ def login_view(request):
             login(request, user)
             return redirect('posts:post-list')
         else :
-            return redirect('members:login')
+            # return redirect('members:login')
+            pass
 
 
         # 1. request.POST 에 데이터가 옴
@@ -37,11 +38,24 @@ def login_view(request):
         #   세션/쿠키 기반의 로그인 과정을 수행, 완료 후 posts:post-list페이지로 redirect
         # 4-2. 인증에 실패한다면
         #   이 페이지에서 인증에 실패했음을 사용자에게 알려줌
-
-        pass
     else:
         form = LoginForm()
         context = {
             'form': form,
         }
         return render(request, 'members/login.html', context)
+
+def logout_view(request):
+    # URL: /members/logout/
+    # Template: 없음
+
+    # !POST요청일 때만 처리
+    # 처리 완료 후 'posts:post-list'로 이동
+
+    # base.html에 있는 'Logout'버튼이 이 view로의 POST요청을 하도록 함
+    # -> form을 구현해야 함
+    if request.method == 'POST':
+        logout(request)
+        return redirect('posts:post-list')
+    else:
+        pass
