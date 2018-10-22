@@ -35,8 +35,26 @@
 					<a href="#" class="btn btn-outline-secondary">Favorites</a>
 				</li>
 				<li class="nav-item">
-					<a href="#" class="btn btn-outline-secondary">Profile</a>
+					<a href="#" class="btn btn-outline-secondary">
+                        Profile
+{#                    로그인 한 경우에만 username표시#}
+                    {% if user.is_authenticated %}
+                        ({{ user.username }})
+                        {% endif %}
+                    </a>
 				</li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+					<a href="#" class="btn btn-outline-secondary">Logout</a>
+				</li>
+                {% else %}
+                <li class="nav-item">
+					<a href="#" class="btn btn-outline-secondary">Login</a>
+				</li>
+                <li class="nav-item">
+					<a href="#" class="btn btn-outline-secondary">Signup</a>
+				</li>
+                {% endif %}
 			</ul>
 
 		</nav>
