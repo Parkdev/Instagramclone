@@ -40,41 +40,51 @@ def post_list(request):
 
 
 def post_create(request):
-    # 1. posts/post_create.html 구현
-    #  form구현
-    #   input[type=file]
-    #   button[type=submit]
+    # 이 view로 왔는데
+    # User가 로그인 된 상태가 아니면
+    # posts:post-list로 보내버리기
+    if request.user.is_authenticated:
+        # 1. posts/post_create.html 구현
+        #  form구현
+        #   input[type=file]
+        #   button[type=submit]
 
-    # 2. /posts/create/ URL에 이 view를 연결
-    #    URL명은 'post-create'를 사용
-    # 3. render를 적절히 사용해서 해당 템플릿을 return
-    # 4. base.html의 nav부분에 '+ Add Post'텍스트를 갖는 a링크 하나 추가,
-    #     {% url %} 태그를 사용해서 포스트 생성 으로 링크 걸어주기
+        # 2. /posts/create/ URL에 이 view를 연결
+        #    URL명은 'post-create'를 사용
+        # 3. render를 적절히 사용해서 해당 템플릿을 return
+        # 4. base.html의 nav부분에 '+ Add Post'텍스트를 갖는 a링크 하나 추가,
+        #     {% url %} 태그를 사용해서 포스트 생성 으로 링크 걸어주기
 
-    if request.method == 'POST':
-        # request.FILES에 form에서 보낸 파일객체가 들어있음
-        # 새로운 Post를 생성한다.
-        #  author는 User.objects.first()
-        #  photo는 request.FILES에 있는 내용을 적절히 꺼내서 쓴다
-        # 완료된 후 posts:post-list로 redirect
-        post = Post(
-            # author=User.objects.first(),
+        if request.method == 'POST':
+            # request.FILES에 form에서 보낸 파일객체가 들어있음
+            # 새로운 Post를 생성한다.
+            #  author는 User.objects.first()
+            #  photo는 request.FILES에 있는 내용을 적절히 꺼내서 쓴다
+            # 완료된 후 posts:post-list로 redirect
+            post = Post(
+                # author=User.objects.first(),
 
-            # SessionMiddleware
-            # AuthenticationMiddleware
-            # 를 통해서 request의 user속성에
-            # 해당 사용자가 인스턴스가 할당
+                # SessionMiddleware
+                # AuthenticationMiddleware
+                # 를 통해서 request의 user속성에
+                # 해당 사용자가 인스턴스가 할당
 
-            author=request.user,
-            photo = request.FILES['photo'],
-        )
-        post.save()
-        return redirect('post:post-list')
+                author=request.user,
+                photo=request.FILES['photo'],
+            )
+            post.save()
+            return redirect('posts:post-list')
+
+
+        else:
+            form = PostCreateForm()
+            context = {
+                'form': form,
+            }
+            return render(request, 'posts/post_create.html', context)
 
 
     else:
-        form = PostCreateForm()
-        context = {
-            'form' : form,
-        }
-        return render(request, 'posts/post_create.html', context)
+        return redirect('posts:post-list')
+
+
