@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 
+from members.models import User
 from .forms import PostCreateForm
 from .models import Post
 
@@ -57,7 +58,14 @@ def post_create(request):
         #  photo는 request.FILES에 있는 내용을 적절히 꺼내서 쓴다
         # 완료된 후 posts:post-list로 redirect
         post = Post(
-            author=User.objects.first(),
+            # author=User.objects.first(),
+
+            # SessionMiddleware
+            # AuthenticationMiddleware
+            # 를 통해서 request의 user속성에
+            # 해당 사용자가 인스턴스가 할당
+
+            author=request.user,
             photo = request.FILES['photo'],
         )
         post.save()
