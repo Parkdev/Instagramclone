@@ -7,14 +7,21 @@
 	      enctype="multipart/form-data"
 	      method="POST">
 		{% csrf_token %}
-		<div class="form-group">
-			<label for="id-photo">사진 첨부</label>
-			<input type="file"
-			       id="id-photo"
-			       name="photo"
-			       class="form-control-file">
-		</div>
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{  field.label }}</label>
+            {{ field }}
+        </div>
+        {% endfor %}
+{#		<div class="form-group">#}
+{#			<label for="id-photo">사진 첨부</label>#}
+{#			<input type="file"#}
+{#			       id="id-photo"#}
+{#			       name="photo"#}
+{#			       class="form-control-file">#}
+{#		</div>#}
 		<button class="btn btn-primary btn-block">업로드</button>
-	</form>
+    </form>
 </div>
+
 {% endblock %}
