@@ -23,7 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # /posts/로 들어오는 URL은 posts.urls모듈에서 처리
     # path('',views.index, name='index'),
-    path('', RedirectView.as_view(patten_name='posts:post-list'), name='index'),
+    path('', RedirectView.as_view(pattern_name='posts:post-list'), name='index'),
     path('posts/', include('posts.urls')),
     path('members/', include('members.urls')),
 ]
