@@ -37,6 +37,12 @@ def login_view(request):
             # request와 authenticate된 user를 사용해서
             # login()처리 후
             login(request, form.user)
+            # GET parameter에 'next'가 전달되었다면
+            # 해당 키의 값으로 redirect
+            # 전달되지 않았으면 'posts:post-list'로 redirect
+            next_path = request.GET.get('next')
+            if next_path:
+                return redirect(next_path)
             return redirect('posts:post-list')
     else:
         form = LoginForm()
