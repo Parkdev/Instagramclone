@@ -97,9 +97,7 @@ def signup_view(request):
 
     # GET요청시 해당 템플릿 보여주도록 처리
     # base.html에 있는 'Signup'버튼이 이 쪽으로 이동할 수 있도록 url 링크걸기
-    context = {
-
-    }
+    context = {}
     if request.method == 'POST':
         # POST로 전달된 데이터를 확인
         # 올바르다면 User를 생성하고 Post-list화면으로 이동
@@ -107,10 +105,11 @@ def signup_view(request):
         form = SignupForm(request.POST)
 
         if form.is_valid():
-            user = User.objects.create_user(
-                username=form.cleaned_data['username'],
-                password=form.cleaned_data['password1'],
-            )
+            user = form.save()
+            # user = User.objects.create_user(
+            #     username=form.cleaned_data['username'],
+            #     password=form.cleaned_data['password1'],
+            # )
             login(request, user)
             return redirect('posts:post-list')
 

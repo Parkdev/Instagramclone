@@ -22,6 +22,7 @@ class LoginForm(forms.Form):
     )
 
 class SignupForm(forms.Form):
+    #폼에 클래스를 추가해서 색을 변경하는등의 작업을 할 수 있다.
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
@@ -48,3 +49,11 @@ class SignupForm(forms.Form):
     #     if password1 != password2:
     #         raise forms.ValidationError('비밀번호가 같지 않습니다.')
 
+    def save(self):
+        if self.errors:
+            raise ValueError('폼의 데이터 유효성 검증에 실패')
+        user = User.objects.create_user(
+            username=self.cleaned_data['username'],
+            password=self.cleaned_data['password1'],
+        )
+        return user
