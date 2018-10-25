@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 
-from .forms import PostCreateForm, CommentCreateForm
+from .forms import PostCreateForm, CommentCreateForm, CommentForm
 from .models import Post, Comment
 
 
@@ -37,7 +37,7 @@ def post_list(request):
     # 적절히 CommentCreateForm을 전달
     context = {
         'posts': posts,
-        'comment_form': CommentCreateForm(),
+        'comment_form': CommentForm(),
     }
     return render(request, 'posts/post_list.html', context)
 
@@ -90,9 +90,14 @@ def comment_create(request,post_pk):
         # if form.is_valid():
         #   form.save(author=request.user, post=post)
         post = Post.objects.get(pk=post_pk)
-        form = CommentCreateForm(request.POST)
+        form = CommentForm(request.POST)
         if form.is_valid():
-            form.save(author=request.user, post=post)
+            # form.save(author=request.user, post=post)
+            # 모델폼을 쓰면 위가 아래처럼바뀐다. (CommentForm)
+            comment = form.save(commit=False)
+            comment.author = request.user
+            comment.post = post
+            comment.save()
             return redirect('posts:post-list')
 
         # content = request.POST['content']

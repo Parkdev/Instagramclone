@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Post
+from .models import Post, Comment
 
 
 class PostCreateForm(forms.Form):
@@ -68,4 +68,18 @@ class CommentCreateForm(forms.Form):
         )
 
 class CommentForm(forms.ModelForm):
+    # Comment Model클래스를 사용하는 ModelForm 구현
+    class Meta:
+        model = Comment
+        fields = [
+            'content',
+        ]
+        widgets = {
+            'content': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'rows': 2,
+                }
+            )
+        }
     pass
