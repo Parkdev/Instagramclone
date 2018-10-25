@@ -1,9 +1,11 @@
+import re
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 
 from .forms import PostCreateForm, CommentCreateForm, CommentForm, PostForm
-from .models import Post, Comment
+from .models import Post, Comment, HashTag
 
 
 def post_list(request):
@@ -110,6 +112,27 @@ def comment_create(request,post_pk):
             comment.author = request.user
             comment.post = post
             comment.save()
+
+
+            # comment가 가진 content속성에서
+            # 해시태그에 해당하는 문자열들을 가져와서
+            # HashTag객체를 가져오거나 생성 (get_or_create)
+            # 이후 comment.tags에 해당 객체들을 추가
+
+            p = re.compile(r'#(?P<tag>\w+)')
+            # tag_string_list = re.findall(p, comment.content)
+            # tag_list =[]
+            # for tag_string in tag_string_list:
+            #     tag = HashTag.objects.get_or_create(
+            #         name=tag_string,
+            #     )[0]
+            #
+            #     tag_list.append(tag)
+            #     comment.tags.set(tag_list)
+            tags = [HashTag.objects.get_or_create(name=name)[0] for name in re.findall(p, comment.content)]
+            comment.tags.set(tags)
+
+
             return redirect('posts:post-list')
 
         # content = request.POST['content']

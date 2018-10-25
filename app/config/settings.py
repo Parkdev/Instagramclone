@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     'members.apps.MembersConfig',
     'posts.apps.PostsConfig',
 
+    'django_extensions',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
