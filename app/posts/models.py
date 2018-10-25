@@ -1,6 +1,6 @@
+from django.conf import settings
 from django.db import models
 
-from django.conf import settings
 
 class Post(models.Model):
     author = models.ForeignKey(
@@ -29,6 +29,7 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
+    TAG_PATTERN = re.compile(r'#(?P<tag>\w+)')
     post = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
@@ -50,6 +51,16 @@ class Comment(models.Model):
     class Meta:
         verbose_name = '댓글'
         verbose_name_plural = f'{verbose_name} 목록'
+
+    def save(self, *args, **kwargs):
+        # DB에 변경내역을 기록한 상
+        super().save(*args, **kwargs)
+
+        # 자신의 'content'값에서 해시태그 목록을 가져와서
+        # 자신의 'tags'속성 (MTM필드)에 할당
+        tags = [HashTag.objects.get_or_create(name=name)[0]
+                for name in re.findall(p, comment.content)]
+        self.tags.set(tags)
 
 
 class HashTag(models.Model):

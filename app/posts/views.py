@@ -3,9 +3,8 @@ import re
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-
-from .forms import PostCreateForm, CommentCreateForm, CommentForm, PostForm
-from .models import Post, Comment, HashTag
+from .forms import CommentForm, PostForm
+from .models import Post, HashTag
 
 
 def post_list(request):
@@ -43,13 +42,14 @@ def post_list(request):
     }
     return render(request, 'posts/post_list.html', context)
 
+
 @login_required
 def post_create(request):
     # if not request.user.is_authenticated:
     #     return redirect('members:login')
 
     context = {}
-    if request.method =='POST':
+    if request.method == 'POST':
         # form = PostCreateForm(request.POST, request.FILES)
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
@@ -60,7 +60,7 @@ def post_create(request):
 
             comment_content = form.cleaned_data['comment']
             if comment_content:
-                #위에서 생성한 Post에 연결되는 Comment생성
+                # 위에서 생성한 Post에 연결되는 Comment생성
                 post.comments.create(
                     author=request.user,
                     content=comment_content,
@@ -73,7 +73,8 @@ def post_create(request):
     context['form'] = form
     return render(request, 'posts/post_create.html', context)
 
-def comment_create(request,post_pk):
+
+def comment_create(request, post_pk):
     """
     post_pk에 해당하는 Post에 댓글을 생성하는 view
     'POST'메서드 요청만 처리
@@ -113,13 +114,12 @@ def comment_create(request,post_pk):
             comment.post = post
             comment.save()
 
-
             # comment가 가진 content속성에서
             # 해시태그에 해당하는 문자열들을 가져와서
             # HashTag객체를 가져오거나 생성 (get_or_create)
             # 이후 comment.tags에 해당 객체들을 추가
 
-            p = re.compile(r'#(?P<tag>\w+)')
+
             # tag_string_list = re.findall(p, comment.content)
             # tag_list =[]
             # for tag_string in tag_string_list:
@@ -129,9 +129,11 @@ def comment_create(request,post_pk):
             #
             #     tag_list.append(tag)
             #     comment.tags.set(tag_list)
-            tags = [HashTag.objects.get_or_create(name=name)[0] for name in re.findall(p, comment.content)]
-            comment.tags.set(tags)
 
+            # 이기능은 save함수에 기능 추가로 대체 할 수 있다.
+            # p = re.compile(r'#(?P<tag>\w+)')
+            # tags = [HashTag.objects.get_or_create(name=name)[0] for name in re.findall(p, comment.content)]
+            # comment.tags.set(tags)
 
             return redirect('posts:post-list')
 
