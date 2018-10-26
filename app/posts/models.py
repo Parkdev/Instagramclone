@@ -64,7 +64,7 @@ class Comment(models.Model):
             # 저장하기 전에 _html필드를 채워야 함 (content갑을 사용해서)
 
             self._html = re.sub(self.TAG_PATTERN,
-                   r'<a href="explore/tags/\g<tag>/">#\g<tag></a>',
+                   r'<a href="/explore/tags/\g<tag>/">#\g<tag></a>',
                    self.content,
                    )
         def save_tags():
