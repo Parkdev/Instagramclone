@@ -18,7 +18,9 @@
                 <ul class="list-unstyled">
                     {% for comment in post.comments.all %}
                         <li>
-                            <strong>{{ comment.author }} </strong><span>{{ comment.content }}</span></li>
+                            <strong>{{ comment.author }} </strong>
+                            <span>{{ comment.html|safe }}</span>
+                        </li>
                         {% endfor %}
                 </ul>
 

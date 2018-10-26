@@ -1,3 +1,5 @@
+import re
+
 from django.conf import settings
 from django.db import models
 
@@ -48,6 +50,8 @@ class Comment(models.Model):
         verbose_name='해시태그 목록',
     )
 
+
+
     class Meta:
         verbose_name = '댓글'
         verbose_name_plural = f'{verbose_name} 목록'
@@ -59,8 +63,34 @@ class Comment(models.Model):
         # 자신의 'content'값에서 해시태그 목록을 가져와서
         # 자신의 'tags'속성 (MTM필드)에 할당
         tags = [HashTag.objects.get_or_create(name=name)[0]
-                for name in re.findall(p, comment.content)]
+                for name in re.findall(self.TAG_PATTERN, self.content)]
         self.tags.set(tags)
+
+    @property
+    def html(self):
+        # 자신의 content속성값에서
+        # "#태그명"에 해당하는 문자열을
+        # 아래와 같이 변경
+        # #문자열 -> <a herf="/explore/tags/{태그명}/">{태그명}</a>
+        # re.sub을 사용
+        return re.sub(self.TAG_PATTERN,
+                      r'<a href="explore/tags/\g<tag>/">#\g<tag></a>',
+                      self.content,
+                      )
+
+        # 템플릿에서는 comment.content대신 comment.html을 출력
+
+        # 숙제
+        # /explore/tags/{태그명}/ URL에서
+        # 해당 태그를 가진 Post목록을 보여주는 view, url, template구현
+        # URL name: tag-post-list
+        # view:
+        #       tag_po9st_list(request, tag_name)
+        # template:
+        #       /posts/tag_post_list.html
+
+        #base.html에 있는 검색창에 값을 입력하고 Enter시 (Submit)
+        # 해당 값을 사용해 위에서 만든 view로 이동
 
 
 class HashTag(models.Model):

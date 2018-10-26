@@ -131,7 +131,7 @@ def comment_create(request, post_pk):
             #     comment.tags.set(tag_list)
 
             # 이기능은 save함수에 기능 추가로 대체 할 수 있다.
-            # p = re.compile(r'#(?P<tag>\w+)')
+            #  = re.compile(r'#(?P<tag>\w+)')
             # tags = [HashTag.objects.get_or_create(name=name)[0] for name in re.findall(p, comment.content)]
             # comment.tags.set(tags)
 
