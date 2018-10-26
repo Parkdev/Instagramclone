@@ -30,6 +30,20 @@
 			<div class="card-body">
 				<img src="{{ post.photo.url }}" class="card-img-top">
 
+                <form action="post_like_toggle에서 처리">
+{#                    버튼의 텍스트에#}
+{#                    현제 user가 이 Post에 좋아요를 누른상태라면 '좋아요해제' 출력#}
+{#                    버튼 클릭시 Post_like_toggle에서 해당 로직 처리#}
+                    <button class="btn btn-primary" type="submit">좋아요/좋아요해제</button>>
+                </form>
+
+            <div>
+                <span>좋아하는 사람 </span>
+                    <strong>{{ post.like_user.all|join:", " }}</strong>
+
+
+            </div>
+
                 <ul class="list-unstyled">
                     {% for comment in post.comments.all %}
                         <li>

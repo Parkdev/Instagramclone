@@ -24,6 +24,16 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
+    # 이 Post에 PostLike를 가진 User목록
+    like_users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        # (특정 User기준)내가 like_users인 Post목록
+        # 내가 Like를 한 Post 목록
+        through='PostLike',
+        related_name='like_posts',
+        related_query_name='like_post'
+    )
+
     class Meta:
         verbose_name = '포스트'
         verbose_name_plural = f'{verbose_name} 목록'
@@ -59,14 +69,14 @@ class Comment(models.Model):
         verbose_name_plural = f'{verbose_name} 목록'
 
     def save(self, *args, **kwargs):
-
         def save_html():
             # 저장하기 전에 _html필드를 채워야 함 (content갑을 사용해서)
 
             self._html = re.sub(self.TAG_PATTERN,
-                   r'<a href="/explore/tags/\g<tag>/">#\g<tag></a>',
-                   self.content,
-                   )
+                                r'<a href="/explore/tags/\g<tag>/">#\g<tag></a>',
+                                self.content,
+                                )
+
         def save_tags():
             tags = [HashTag.objects.get_or_create(name=name)[0]
                     for name in re.findall(self.TAG_PATTERN, self.content)]
@@ -79,9 +89,6 @@ class Comment(models.Model):
 
         # 자신의 'content'값에서 해시태그 목록을 가져와서
         # 자신의 'tags'속성 (MTM필드)에 할당
-
-
-
 
     @property
     def html(self):
@@ -103,7 +110,7 @@ class Comment(models.Model):
         # template:
         #       /posts/tag_post_list.html
 
-        #base.html에 있는 검색창에 값을 입력하고 Enter시 (Submit)
+        # base.html에 있는 검색창에 값을 입력하고 Enter시 (Submit)
         # 해당 값을 사용해 위에서 만든 view로 이동
 
 
@@ -116,3 +123,32 @@ class HashTag(models.Model):
     class Meta:
         verbose_name = '해시태그'
         verbose_name_plural = f'{verbose_name} 목록'
+
+
+class PostLike(models.Model):
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return 'Post[{post_pk}] Like (User: {username})'.format(
+            post_pk=self.post.pk,
+            username=self.user.username,
+        )
+
+    class Meta:
+        # 특정 User가 특정 Post를 좋아요 누른 정보는 unique해야함
+        unique_together = (
+            ('post', 'user'),
+        )
+
+    def like_toggle(self, user):
+        # 전달받은 user가 이 Post를 Like한다면 해제
+        # 안되어있다면 Like 처리
+        pass
