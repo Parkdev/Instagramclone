@@ -1,4 +1,6 @@
+
 from django.contrib.auth.models import AbstractUser
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.db import models
 
 
@@ -22,3 +24,9 @@ class User(AbstractUser):
     class Meta:
         verbose_name = '사용자'
         verbose_name_plural = f'{verbose_name} 목록'
+
+    @property
+    def img_profile_url(self):
+        if self.img_profile.url:
+            return self.img_profile.url
+        return static('images/blank_user.png')

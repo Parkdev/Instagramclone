@@ -142,8 +142,10 @@ def profile(request):
         form = UserProfileForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             form.save()
+            # https://docs.djangoproject.com/ko/2.1/ref/contrib/messages/
             # is_valid()를 통과하고 인스턴스 수정이 완료되면
-            # messages모듈을 사용해서 템플릿에 수정완료 메세지를 표
+            # messages모듈을 사용해서 템플릿에 수정완료 메세지를 표시
+            #
 
 
     form = UserProfileForm(instance=request.user)
