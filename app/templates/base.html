@@ -55,7 +55,7 @@
 					<a href="#" class="btn btn-outline-secondary">Favorites</a>
 				</li>
 				<li class="nav-item">
-					<a href="#" class="btn btn-outline-secondary">
+					<a href="{% url 'members:profile' %}" class="btn btn-outline-secondary">
                         Profile
 {#                    로그인 한 경우에만 username표시#}
                     {% if user.is_authenticated %}
