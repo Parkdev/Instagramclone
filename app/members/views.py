@@ -128,6 +128,24 @@ def signup_view(request):
 
 @login_required
 def profile(request):
+
+    # POST요청시에는 현재 로그인한 유저의 값을
+    # POST요청에 담겨온 값을 사용해 수정
+    # 이후 다시 form을 보여줌
+    #   f = Form(request.POST,
+    #            request.FILES,
+    #            instance=<수정할 인스턴스>)
+
+    # GET요청시에는 현재 로그인한 유저의 값을 가진
+    # Form을 보여줌
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            # is_valid()를 통과하고 인스턴스 수정이 완료되면
+            # messages모듈을 사용해서 템플릿에 수정완료 메세지를 표
+
+
     form = UserProfileForm(instance=request.user)
     context = {
         'form': form,
