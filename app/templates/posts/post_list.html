@@ -4,7 +4,7 @@
 <div>
 	{% for post in posts %}
 	<!--이 div가 lg(width >= 992px)일 때, 4/12의 크기를 가지며 4/12 위치를 기준으로 시작함-->
-	<div class="col col-lg-4 offset-lg-4 mb-4">
+	<div id="post-{{ post.pk }}" class="col col-lg-4 offset-lg-4 mb-4">
 		<!--Card모양에 대해 미리 정의된 클래스-->
 		<div class="card">
 			<!--작성자 정보를 나타낼 header부분-->
@@ -29,17 +29,24 @@
 			<!--Card의 본문 부분-->
 			<div class="card-body">
 				<img src="{{ post.photo.url }}" class="card-img-top">
-
-                <form action="post_like_toggle에서 처리">
+                {%  if user.is_authenticated %}
+                <form action="{%  url 'posts:post-like-toggle' post_pk=post.pk %}" method="POST">
 {#                    버튼의 텍스트에#}
 {#                    현제 user가 이 Post에 좋아요를 누른상태라면 '좋아요해제' 출력#}
 {#                    버튼 클릭시 Post_like_toggle에서 해당 로직 처리#}
-                    <button class="btn btn-primary" type="submit">좋아요/좋아요해제</button>>
+                    {% csrf_token %}
+                    <button class="btn btn-primary" type="submit">
+                        {% if user in post.like_users.all %}
+                            좋아요 해제
+                            {% else %}
+                            좋아요
+                        {% endif %}
+                    </button>
                 </form>
-
+            {% endif %}
             <div>
                 <span>좋아하는 사람 </span>
-                    <strong>{{ post.like_user.all|join:", " }}</strong>
+                    <strong>{{ post.like_users.all|join:", " }}</strong>
 
 
             </div>

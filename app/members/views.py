@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -145,7 +146,11 @@ def profile(request):
             # https://docs.djangoproject.com/ko/2.1/ref/contrib/messages/
             # is_valid()를 통과하고 인스턴스 수정이 완료되면
             # messages모듈을 사용해서 템플릿에 수정완료 메세지를 표시
-            #
+            messages.success(
+                request,
+                '프로필 수정이 완료되었습니다',
+            )
+
 
 
     form = UserProfileForm(instance=request.user)

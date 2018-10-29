@@ -1,7 +1,8 @@
 import re
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 
 from .forms import CommentForm, PostForm
 from .models import Post, HashTag
@@ -170,12 +171,15 @@ def tag_search(request):
     # url = f'/explore/tags/{search_keyword}/'
     return redirect('tag-post-list', substituted_keyword)
     pass
-
-def post_like(request, post_pk):
+@login_required
+def post_like_toggle(request, post_pk):
     # URL: '/posts/<post_pk>/like-toggle/
     # URL Name: 'posts:post-like-toggle'
     # POST method에 대해서만 처리
 
     # request.user가 post_pk에 해당하는 Post에
     # Like Toggle처리
-    pass
+    post = get_object_or_404(Post, pk=post_pk)
+    post.like_toggle(request.user)
+    url = reverse('posts:post-list')
+    return redirect(url + f'#post-{post_pk}')

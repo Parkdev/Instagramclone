@@ -3,6 +3,8 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.db import models
 
+from posts.models import PostLike
+
 
 class User(AbstractUser):
 
@@ -31,7 +33,15 @@ class User(AbstractUser):
             return self.img_profile.url
         return static('images/blank_user.png')
 
-    def like_post(self, post):
+    def like_post_toggle(self, post):
         # 전달받은 post에 Like를 Toggle처리
-        pass
+        # PostLike.objects.filter(
+        #     post=post,
+        #     user=self,
+        # ).exists()
+        if self.postlike_set.filetr(post=post).exist():
+            self.postlike_set.filter(post=post).delete()
+        else:
+            self.postlike_set.create(post=post)
+
 
