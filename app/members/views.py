@@ -1,9 +1,13 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+
+import requests
 
 # Create your views here.
 from members.forms import LoginForm, SignupForm, UserProfileForm
@@ -160,3 +164,47 @@ def profile(request):
 
     return render(request, 'members/profile.html', context)
 
+def facebook_login(request):
+    api_get_access_token = 'https://graph.facebook.com/v3.2/oauth/access_token'
+    # URL: /members/facebook-login/
+    # URL name: 'members:facebook-login'
+    # request.GET에 전달된 'code'값을
+    #   그대로 HttpResponse로 출력
+
+    # 페이스북 로그인 버튼의 href안에 있는 'redirect_uri'값을
+    # 이 view로 오도록 설정
+
+    #request token
+    code = request.GET.get('code')
+
+    # request token을 access token으로 교환
+    # 엑세스 토큰 교환 엔드포인트에
+    # requests를 사용해서 GET요청
+    # 이후 돌아온 response.text를
+    # HttpResponse로 보여주기
+    # response = requests.get(f'https://graph.facebook.com/v3.2/oauth/access_token?'
+    #                         f'client_id=505053883344168'
+    #                         f'&redirect_uri=http://localhost:8000/members/facebook-login'
+    #                         f'&client_secret=ebb5291bee726882d7cf5da0906b1352'
+    #                         f'&code={code}')
+
+    #더깔끔하게
+    params = {
+        'client_id': 505053883344168,
+        'redirect_uri': 'http://localhost:8000/members/facebook-login/',
+        'client_secret': 'ebb5291bee726882d7cf5da0906b1352',
+        'code': code,
+    }
+    response = requests.get(api_get_access_token, params)
+    # 인수로 전달한 문자열이 'JSON' 형식일 것으로 생각
+    # json.loades는 전달한 문자열이 JSON형식일 경우, 해당 문자열을 파싱해서 파이썬 object를 리턴함
+    # response_object = json.loads(response.text)
+    # data = response.json()
+    # access token = data['access_token']
+    #
+    # return HttpResponse('{}, {}'.format(
+    #     response_object,
+    #     type(response_object),
+    # ))
+
+    return HttpResponse(response.text)
