@@ -1,13 +1,18 @@
+import io
 import json
+from pprint import pprint
 
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 import requests
+
+User = get_user_model()
 
 # Create your views here.
 from members.forms import LoginForm, SignupForm, UserProfileForm
@@ -165,7 +170,10 @@ def profile(request):
     return render(request, 'members/profile.html', context)
 
 def facebook_login(request):
-    api_get_access_token = 'https://graph.facebook.com/v3.2/oauth/access_token'
+    api_base = 'https://graph.facebook.com/v3.2'
+    api_get_access_token = f'{api_base}/oauth/access_token'
+    api_me = f'{api_base}/me'
+
     # URL: /members/facebook-login/
     # URL name: 'members:facebook-login'
     # request.GET에 전달된 'code'값을
@@ -207,4 +215,43 @@ def facebook_login(request):
     #     type(response_object),
     # ))
 
-    return HttpResponse(response.text)
+    data = response.json()
+    access_token = data['access_token']
+
+    params = {
+        'access_token': access_token,
+        'fields' : ','.join([
+            'id',
+            'first_name',
+            'last_name',
+            'picture.type(large)',
+        ]),
+    }
+
+    response = requests.get(api_me, params)
+    data = response.json()
+
+    facebook_id = data['id']
+    first_name = data['first_name']
+    last_name = data['last_name']
+    url_img_profile = data['picture']['data']['url']
+
+    # HTTP GET요청의 응답을 받아옴
+    img_response = requests.get(url_img_profile)
+    img_data = img_response.content
+
+
+    # 응답의 binary data를 사용해서 In-memory binary stream(file)객체를 생성
+    # f = io.BytesIO(img_response.content)
+    f = SimpleUploadedFile(img_response,)
+
+    User.objects.create_user(
+        username=facebook_id,
+        first_name=first_name,
+        last_name=last_name,
+        img_profile=img_response.content,
+
+    )
+    # pprint(data)
+    # return HttpResponse('{}<br>{}'.format(str(data), response.url))
+    return HttpResponse(data)
