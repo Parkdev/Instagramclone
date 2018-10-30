@@ -1,3 +1,4 @@
+import imghdr
 import io
 import json
 from pprint import pprint
@@ -240,18 +241,32 @@ def facebook_login(request):
     img_response = requests.get(url_img_profile)
     img_data = img_response.content
 
-
     # 응답의 binary data를 사용해서 In-memory binary stream(file)객체를 생성
+    # 이렇게 안하고 FileField가 지원하는 InMemoryUPloadedFile객체를 사용하기!
     # f = io.BytesIO(img_response.content)
-    f = SimpleUploadedFile(img_response,)
 
-    User.objects.create_user(
-        username=facebook_id,
-        first_name=first_name,
-        last_name=last_name,
-        img_profile=img_response.content,
+    # imghdr모듈을 사용해 Imgage binary data의 확장자를 알아냄
+    ext = imghdr.what('', h=img_data)
+    # Form에서 업로드한 것과 같은 형태의 file-like object생성
+    # 첫 번째 인로 반드시 파일명이 필요, <facebook_di>, <확장자>형태의 파일명을 지정
+    f = SimpleUploadedFile(f'{facebook_id}.{ext}', img_response.content)
 
-    )
+    try:
+        user = User.objects.get(username=facebook_id)
+        # update_or_create 를 써도된다 (검색해봐)
+        user.last_name = last_name
+        user.first_name = first_name
+        user.save()
+
+    except User.DoesNotExist:
+        user = User.objects.create_user(
+            username=facebook_id,
+            first_name=first_name,
+            last_name=last_name,
+            img_profile=f,
+        )
+
+    login(request, user)
     # pprint(data)
     # return HttpResponse('{}<br>{}'.format(str(data), response.url))
-    return HttpResponse(data)
+    return redirect('posts:post-list')
